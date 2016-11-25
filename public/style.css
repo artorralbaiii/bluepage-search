@@ -1,0 +1,43 @@
+a {
+    cursor: pointer;
+}
+
+.container {
+    margin-top: 100px;
+}
+
+label {
+    font-size: 14px;
+    font-family: "Tahoma", sans-serif;
+    color: #808080;
+}
+
+h1 {
+    margin-bottom: 50px;
+}
+
+p.error {
+    font-style: italic;
+    font-size: 14px;
+    color: #FF0000;
+}
+
+form .action-container {
+    padding: 0px 15px;
+}
+
+form .action-container button {
+    width: 100px;
+}
+
+.current-user-profile table {
+    font-size: 12px;
+}
+
+.selected-user-profile table {
+    font-size: 12px;
+}
+
+.selected-user-profile {
+    margin-top: 20px;
+}

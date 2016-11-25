@@ -1,0 +1,23 @@
+{
+  "name": "NodejsStarterApp",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cfenv": "1.0.x",
+    "express": "4.13.x",
+    "express-session": "^1.14.2",
+    "lodash": "^4.17.2",
+    "node-cache": "^4.1.0",
+    "passport": "^0.3.2",
+    "passport-ldapauth": "^0.6.0",
+    "request": "^2.79.0"
+  },
+  "repository": {},
+  "engines": {
+    "node": "4.x"
+  }
+}
