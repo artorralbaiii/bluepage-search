@@ -1,7 +1,10 @@
 'use strict';
 
+var https = require('https');
+var fs = require('fs');
 var express = require('express');
 var cfenv = require('cfenv');
+var cors = require('cors');
 var app = express();
 var appEnv = cfenv.getAppEnv();
 var passport = require('passport');
@@ -16,14 +19,23 @@ var bluepageCache = new NodeCache({
 });
 var _ = require('lodash');
 
-var bluepageApi = 'http://bluepages.ibm.com/BpHttpApisv3/slaphapi?*/dept=FV0.list/byjson?callupName&ibmSerialNumber&jobresponsibilities';
+var bluepageApi = 'https://bluepages.ibm.com/BpHttpApisv3/slaphapi?*/dept=FV0.list/byjson?callupName&ibmSerialNumber&jobresponsibilities';
 
 var OPTS = {
     server: {
-        url: 'ldap://bluepages.ibm.com:389',
+        //url: 'ldap://bluepages.ibm.com:389',
+        url: 'ldaps://bluepages.ibm.com',
         searchBase: 'ou=bluepages,o=ibm.com',
         searchFilter: '(emailAddress={{username}})'
     }
+};
+
+var httpsOptions = {
+    key: fs.readFileSync('./certs/server_np.key'),
+    cert: fs.readFileSync('./certs/server.crt'),
+    ca: fs.readFileSync('./certs/ca.crt'),
+    requestCert: true,
+    rejectUnauthorized: false
 };
 
 passport.use(new LdapStrategy(OPTS));
@@ -38,6 +50,8 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 
 app.use(express.static(__dirname + '/public'));
+
+app.use(cors());
 
 app.use(errorService);
 
@@ -62,12 +76,15 @@ app.get('*', function (req, res) {
 cacheRequest(bluepageApi, 'bluepage', bluepageCache);
 bluepageCache.on("expired", refreshCacheService);
 
+//var secureServer = https.createServer(httpsOptions, app).listen(appEnv.port, function() {
+//    console.log("server starting on " + appEnv.url);
+//});
+
 // start server on the specified port and binding host
 app.listen(appEnv.port, '0.0.0.0', function () {
     // print a message when the server starts listening
     console.log("server starting on " + appEnv.url);
 });
-
 
 //////////
 
@@ -174,7 +191,7 @@ function searchName(req, res, next) {
                     return o.attribute[0].value[0].toLowerCase().indexOf(req.params.search.toLowerCase()) != -1;
                 });
 
-                res.json(searchCollection.slice(0,5));
+                res.json(searchCollection.slice(0, 5));
             }
         } else {
             next(err);
