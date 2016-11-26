@@ -1,7 +1,5 @@
 'use strict';
 
-var https = require('https');
-var fs = require('fs');
 var express = require('express');
 var cfenv = require('cfenv');
 var cors = require('cors');
@@ -30,13 +28,17 @@ var OPTS = {
     }
 };
 
-var httpsOptions = {
-    key: fs.readFileSync('./certs/server_np.key'),
-    cert: fs.readFileSync('./certs/server.crt'),
-    ca: fs.readFileSync('./certs/ca.crt'),
-    requestCert: true,
-    rejectUnauthorized: false
-};
+app.enable('trust proxy');
+
+app.use(function (req, res, next) {
+    if (req.secure) {
+        // request was via https, so do no special handling
+        next();
+    } else {
+        // request was via http, so redirect to https
+        res.redirect('https://' + req.headers.host + req.url);
+    }
+});
 
 passport.use(new LdapStrategy(OPTS));
 
